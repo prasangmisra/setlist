@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+     <meta name="viewport" content="width=device-width, user-scalable=no" />
+     <meta charset="UTF-8">
+     <title>SongScroller Template</title>
+     <style>
+          table {
+               font-family: arial, sans-serif;
+               border-collapse: collapse;
+               width: 100%;
+          }
+
+          td,
+          th {
+               border: 1px solid #dddddd;
+               text-align: left;
+               padding: 8px;
+          }
+
+          tr:nth-child(even) {
+               background-color: #dddddd;
+          }
+
+          .button-panel {
+               position: fixed;
+               bottom: 10px;
+               left: 0;
+               width: 100%;
+               display: flex;
+               justify-content: space-around;
+               background-color: #fdf6e3;
+               padding: 10px;
+               border-top: 1px solid #ccc;
+               z-index: 10;
+          }
+
+          .button-panel button {
+               font-size: 14px;
+               padding: 8px 16px;
+               border: none;
+               background: #2c3e50;
+               color: white;
+               border-radius: 4px;
+               cursor: pointer;
+          }
+
+          .button-panel button:hover {
+               background: #1abc9c;
+          }
+
+          .chord {
+               color: red;
+               font-weight: bold;
+          }
+
+          .song-block {
+               background-color: #fcfcfc;
+               padding: 16px;
+               margin: 20px 0;
+               border-radius: 10px;
+               border: 1px solid #ddd;
+          }
+
+          .song-title {
+               text-align: center;
+               font-size: 18px;
+               font-weight: bold;
+               margin: 10px 0;
+               padding: 6px;
+               background: #f1f1f1;
+               border-left: 4px solid #2c3e50;
+               border-right: 4px solid #2c3e50;
+          }
+
+          #lyrics pre {
+               font-family: 'Courier New', monospace;
+               font-size: 16px;
+               line-height: 1.6;
+               white-space: pre-wrap;
+               color: #222;
+          }
+
+          .chord {
+               color: #d6336c;
+               font-weight: bold;
+               background-color: #fff0f3;
+               padding: 0 4px;
+               border-radius: 4px;
+          }
+     </style>
+     <script type="text/javascript">
+          // Configuration
+          let duration = 500; // duration in seconds
+          let ss = 1; // scroll step in pixels
+          let autoscroll = null;
+
+          // Standard chromatic scale for transposing
+          const chords = [
+               "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"
+          ];
+
+          // Regex to match chords inside [ ]
+          function transposeChord(chord, up = true) {
+               let match = chord.match(/\[([A-G][#b]?m?)\]/);
+               if (!match) return chord;
+
+               let base = match[1];
+               let isMinor = base.endsWith("m");
+               let root = isMinor ? base.slice(0, -1) : base;
+
+               let idx = chords.indexOf(root);
+               if (idx === -1) return chord;
+
+               let newIdx = up ? (idx + 1) % chords.length : (idx - 1 + chords.length) % chords.length;
+               let newChord = chords[newIdx] + (isMinor ? "m" : "");
+
+               return `[${newChord}]`;
+          }
+
+          function transpose(up = true) {
+               const lyrics = document.getElementById("lyrics");
+               let html = lyrics.innerHTML;
+               html = html.replace(/\[[A-G][#b]?m?\]/g, function (chord) {
+                    return transposeChord(chord, up);
+               });
+               lyrics.innerHTML = html;
+          }
+
+          function transup() {
+               transpose(true);
+               highlightChords();
+          }
+
+          function transdown() {
+               transpose(false);
+               highlightChords();
+          }
+
+          function highlightChords() {
+               const lyrics = document.getElementById("lyrics");
+               let html = lyrics.innerHTML;
+               html = html.replace(/\[([A-G][#b]?m?)\]/g, function (match, p1) {
+                    return `<span class="chord">[${p1}]</span>`;
+               });
+               lyrics.innerHTML = html;
+          }
+
+          function pageScroll() {
+               const scrollButton = document.getElementById("scroll");
+
+               if (scrollButton.innerText === "START SCROLL") {
+                    const scrollHeight = document.body.scrollHeight - window.innerHeight;
+                    const totalSteps = scrollHeight / ss;
+                    const interval = (duration * 1000) / totalSteps;
+
+                    autoscroll = setInterval(() => {
+                         window.scrollBy(0, ss);
+                    }, interval);
+
+                    scrollButton.innerText = "STOP SCROLL";
+               } else {
+                    clearInterval(autoscroll);
+                    scrollButton.innerText = "START SCROLL";
+               }
+          }
+          function enableGlobalScrollTrigger() {
+               document.body.addEventListener("click", pageScroll);
+          }
+     </script>
+
+</head>
+
+
+<body style="font-weight:bold;" onkeypress="pageScroll()" onLoad="highlightChords(); enableGlobalScrollTrigger();">
+
+     <div class="button-panel">
+          <button onclick="pageScroll()" id="scroll">START SCROLL</button>
+          <button onclick="transup()">TRANS +</button>
+          <button onclick="transdown()">TRANS -</button>
+     </div>
+     <pre id="lyrics" style="font-size:100%; font-weight:bold;">
+<!-- ADD LYRICS BELOW THIS LINE -->
+<div>
+     <h2 style="text-align: center;">90s Mashup</h2>
+     <h3 style="text-align: center;">BPM - 88</h3>
+
+     <table>
+          <tr>
+            <th>Chords</th>
+            <!-- <th>Piano Key</th>
+            <th>Computer Key</th> -->
+          </tr>
+          <tr>
+            <td>Am</td>
+            <!-- <td>1</td>
+            <td>Z</td> -->
+          </tr>
+          <tr>
+            <td>G</td>
+            <!-- <td>2</td>
+            <td>S</td> -->
+          </tr>
+          <tr>
+            <td>Em</td>
+            <!-- <td>3</td>
+            <td>X</td> -->
+          </tr>
+          <tr>
+            <td>C</td>
+            <!-- <td>4</td>
+            <td>D</td> -->
+          </tr>
+          <tr>
+            <td>F</td>
+            <!-- <td>5</td>
+            <td>C</td> -->
+          </tr>
+     </table>
+     <h2>Songs</h2>
+     <ul>
+          <li>Woh Pehli Baar</li>
+          <li>Bheegi Bheegi Raaton Mein</li>
+          <li>Chaand Chhupa Badal Mein</li>
+          <li>Pehla Pehla Pyaar Hai</li>
+          <li>Agar Tum Mil Jao</li>
+          <li>Pyaar Kiya To Nibhaana</li>
+          <li>Tere Dar Par Sanam</li>
+          <li>Tujhe Dekha To Ye Jaana Sanam</li>
+          <li>Tanha Tanha Yaha Pe Jeena</li>
+          <li>Dil De Diya Hai</li>
+          <li>Humko Humee Se Chura Lo</li>
+          <li>Dil Ko Tumse Pyaar Hua</li>
+          <li>Dheere Dheere Se Meri Zindagi Mein Aana</li>
+          <li>Tere Bin Mai Yu Kaise Jiya</li>
+          <li>Oh Oh Jaane Jaana</li>
+      </ul>
+
+
+      <div class="song-block">
+          <div class="song-title">1. Woh Pehli Baar</div>
+          <pre>
+<span class="chord">[Am]</span>                  <span class="chord">[G]</span>
+Woh pehli baar jab hum mile
+             <span class="chord">[Em]</span>          <span class="chord">[Am]</span>
+Haathon mein haath jab hum chale
+ <span class="chord">[Am]</span>             <span class="chord">[G]</span>
+Ho gaya ye dil deewana
+ <span class="chord">[G]</span>          <span class="chord">[Em]</span>     <span class="chord">[Am]</span>
+Hota hai pyaar kya isne jaana
+ 
+ <span class="chord">[C]</span>                     <span class="chord">[G]</span>
+Teri aankhon mein jannat basake chala
+ <span class="chord">[G]</span>                       <span class="chord">[Em]</span> 
+Teri zulfon ki chhaaon mein chalta chala
+ <span class="chord">[Am]</span>                      <span class="chord">[G]</span>
+Tere neinon mein chein tere labh pe khushi
+ <span class="chord">[G]</span>                   <span class="chord">[Em]</span>    <span class="chord">[Am]</span>
+Tujhko hi main mohabbat bana ke chala
+ 
+Woh pehli baar jab hum mile
+ <span class="chord">[Em]</span>          <span class="chord">[Am]</span>
+Haathon mein haath jab hum chale
+<span class="chord">[Am]</span>             <span class="chord">[G]</span>
+Ho gaya ye dil deewana
+<span class="chord">[G]</span>          <span class="chord">[Em]</span>     <span class="chord">[Am]</span>
+Hota hai pyaar kya isne jaana
+
+          </pre>
+     </div>
+     </div>
+
+
+
+
+     -----------------------------------------------------
+     Bheegi Bheegi Raaton Mein
+     -----------------------------------------------------
+     Bheegi bheegi raaton mein phir tum aao na
+     Bheegi bheegi raaton mein phir tum aao na
+     Aisi barsaaton mein aao na
+
+     Dhadkanon mein aa gaya hai
+     Ek nagma tere pyaar ka
+     Jaise koi sur mila ho
+     Dil ke taar se dil ke taar ka
+
+     Pal ki hansi mein
+     Yunhi dillagi mein yeh dil gaya
+     Hamein kya mila hai
+     Tumhe to mera dil bhi mil gaya
+
+     Leke pyaar aanhkon mein
+     Leke pyaar aankhon mein aao na
+
+
+     -----------------------------------------------------
+     Chand Chhupa Badal Mein
+     -----------------------------------------------------
+     [Intro]
+
+     [Am] [Dm]
+     Chand chupa badal mein
+     [G] [C]
+     Sharma ke meri jaana
+     [Am] [Dm]
+     Seene se lag ja tu
+     [G] [Am]
+     Balkha ke meri jaana
+
+
+     [Verse 1]
+
+     [E]
+     Gumsum sa hai, gupchup sa hai
+     [C]
+     Madhosh hai, khamosh hai
+     [G] [E]
+     Ye samaa haan ye sama kuch aur hai
+     [Am] [Dm]
+     Ho ho ho chand chupa baadal mein
+     [G] [C]
+     Sharma ke meri jaana
+     [Am] [Dm]
+     Seene se lag ja tu
+     [G] [Am] [Dm]
+     Balkha ke meri jaana
+
+
+     -----------------------------------------------------
+     Pehla Pehla Pyaar Hai
+     -----------------------------------------------------
+Pehla Phela Pyaar Hai
+[Am]...............[G]...
+Pehli pehli bar hai
+[G]..............[Am]...
+Jaan Ke Bhi Anjaana
+[A]...........[Dm].....
+Kaisa Mera Yaar Hai..
+[C]..........[G]....[Am]...
+Uski Nazar, Palkon Ki Chilman Se Mujhe Dekhti, Uski Nazar
+[Am]..........[D]..................................[Am].......
+Uski Haya, Apni Hi Chaahat Ka Raaz Kholti, Uski Haya
+[Am]..........[D]..............................[Am].......
+Chhup Ke Kare Jo Wafa, Aisa Mera Yaar Hai
+[A]................[Dm]....[C].........[G]....[Am]..
+Pehla Pehla Pyar Hai ...
+[Am]...............[G]...
+
+     -----------------------------------------------------
+     2. Agar Tum Mil Jao
+     -----------------------------------------------------
+[G]
+Agar Tum Mil Jao
+[Em] [Am]
+Zamana [C]hod Denge Hum
+[C] [Em]
+Tumhe Paakar Zamane Bhar Se
+[G]
+Rishta Tod Denge Hum
+
+[C] [Em] [G] [Am]
+Bina Tere Koi Dil Kash Nazara Hum Na Dekhenge
+[C] [Em] [G] [Am]
+Tumhe Na Ho Pasand Usko Dobara Hum Na Dekhenge
+[G] [Em] [G]
+Teri Surat Na Ho Jis Mein... Mmmm Mmmm
+[G]
+Teri Surat Na Ho Jis Mein
+[Em] [Am]
+Wo Sheesha Tod Denge Hum
+
+
+     ---------------------------------------------------
+     3. Kehta Hai Pal Pal
+     --------------------------------------------------
+
+[Am]
+Kehta Hai Pal Pal Tumse
+[G]
+Ho Ke Dil Ye Deewana
+[Em]
+Ek Pal Bhi Jaane Jaana
+[Am]
+Mujhse Door Nahin Jana
+[G]
+Pyaar Kiya To Nibhana
+[Am]
+Pyaar Kiya To Nibhana
+
+
+     --------------------------------------------------
+     4. Tere Dar Par Sanam
+     --------------------------------------------------
+[G]
+Tere Dar Par
+[Am]
+Sanam Chale Aaye
+[G]
+Tu Na Aaya To
+[Am]
+Hum Chale Aaye
+
+
+
+     ---------------------------------------------------
+     5. Tujhe Dekha Toh Yeh Jaana Sanam
+     ---------------------------------------------------
+[Am]
+Aankhen meri, sapne tere.
+[F] [Am]
+Dil mera, yaadein teri.
+[Am]
+Oh, mera hai kya? La la la...Sab kuch tera. La la la...
+[F] [Am]
+Jaan teri; saansein teri
+[Am] [G]
+Meri aankhon mein aansu, tere, agaaye.
+[F] [Am]
+Muskuraane lage saare gham...
+
+
+[Am] [C] [Am]
+Tujhe dekha to yeh jaana sanam -
+[C] [G]
+Pyaar hota hai deewana sanam.
+[Em]
+Ab yahaan se kahaan jaaye hum?
+[G] [Am]
+Teri baahoon mein mar jaaye hum.
+[Am] [C] [Am]
+Tujhe dekha to yeh jaana sanam...
+
+
+
+     ---------------------------------------------------
+     6. Tanha Tanha
+     ---------------------------------------------------
+
+Tanha Tanha Yahan Pe Jeena Ye Koi Baat Hai
+Koi Saathi Nahin Tera Yahaan To Ye Koi Baat Hai
+Kisi Ko Pyaar Dede
+Kisi Ka Pyaar Lele
+Is Saare Zamaane Mein Yehi Pyaari Baat Hai
+
+
+     -----------------------------------------------------
+     7. Dil De Diya Hai
+     -----------------------------------------------------
+
+[Am] [G]
+Dil De Diya Hai, Jaan Tumhe Denge
+[F] [Am]
+Daga Nahi Karenge Sanam...
+
+[Am] [G]
+Dil De Diya Hai, Jaan Tumhe Denge
+[F] [Am]
+Daga Nahi Karenge Sanam
+     
+[C] [G] [F]
+Hooo… Rab Dee Kasam Yaara, Rab Dee Kasam...
+
+[Am] [G]
+Dil De Diya Hai, Jaan Tumhe Denge
+[F] [Am]
+Daga Nahi Karenge Sanam...
+
+
+     -----------------------------------------------------
+     8. Hum Ko Humi Se Chura Lo
+     -----------------------------------------------------
+[Am] [G]
+Humko humise chura lo,
+[G] [Am]
+Dil mein kahin tum chupa lo.
+[Am] [G]
+Humko humise chura lo,
+[G] [Am]
+Dil mein kahin tum chupa lo.
+[Am] [G]
+Hum akele, kho na jaayen,
+[G] [A] [G]
+Door tumse, ho na jaayen,
+[C] [A]
+..Paas aao gale se laga lo
+
+
+     ----------------------------------------------------
+     9. Dil Ko Tumse Pyaar
+     ----------------------------------------------------
+
+     
+[Am]
+Kho gaya main khyalon main,
+[Am]
+Ab neend bhi nahi aankhon main.
+[Am]
+Karwate was badalta hoon,
+[Am]
+Ab jaagta hoon main raaton main.
+[Am] [G] [F] [C] [E]
+ab doori na sahni har lamha kehta hai
+[Am] [G] [F] [C] [E]
+na jaane haal mera aisa kyun rehta hai
+
+Main deewana tera ban gaya jaane jaana
+Main fasaana tera ban gaya jaane jaana
+
+[Am] [Am] [Am]
+hasina gori gori churaye chori chori churaye dil chori chori chori chori
+
+     
+[Am] [Dm] [G]
+Dil ko tumse pyaar hua
+[C] [F] [G] [C] [E]
+pehli baar hua tumse pyaar hua
+[Am] [Dm] [G]
+main bhi aashiq yaar hua
+[C] [F] [G] [C] [E]
+pehli baar hua tumse pyaar hua
+[Dm] [Am]
+chayi hai.....
+[Dm] [Am]
+beataabi......
+[Bb] [F] [E]
+meri jaan kaho main kya karoon
+
+
+     -----------------------------------------------------
+     10. Dheere Dheere Se Meri Zindagi
+     -----------------------------------------------------
+
+     [Am]             [G] 
+     Har pal meriyaan yadaan
+     [G]           [Am]
+     Yadaan vich ae tu
+     [Am]              [G]
+     Dil di gal main dassa
+     [G]          [Am]
+     Te dassa fir kinnu
+     
+     [Am]                 [G]
+     Teri meri, meri teri ik jind'di
+     [G]             [Am]
+     Ik jind'di what to do
+     [Am]                   [G]
+     Jhoomu main naachu main gaaun ke likhun
+     [Gm]               [Am]
+     Tere liye main kya karun
+     
+     Dheere Amdheere se meri zindagi mein Gaana
+     Dheere Amdheere se dil ko churana
+     Tumse Ampyaar hume hai kitna Gjaane
+     Tumse Ammil kar tumko hai batana
+
+
+
+     ----------------------------------------------------------------
+     11. Tere Bin
+     ----------------------------------------------------------------
+
+     [Am] [Em] [F] [Em] [Am]
+     Tere Bin mai yun Kaise jiya Kaise jiya tere bin
+
+     [Am] [G] [F] [Am]
+     Lekar yaadein teri raatein meri katien
+
+     [Am] [G] [F] [Am]
+     Lekar yaadein teri raatein meri katien
+
+     [Am] [G] [F] [Am]
+     Mujhse baatein teri karti hai chandani
+
+     [Am] [Dm] [G]
+     Tanha haiiiiii tujh bin raatein meri
+
+     [Am] [Dm] [G]
+     Din mereeee din ke jaise nahin
+
+     [Am] [F] [G]
+     Tanha badan tanha hai man nam meri aankhien rahen
+
+     [Am] [F] [G]
+     Aaja mere ab roobaro jeena nahin bin tere
+
+     [Am] [Em] [F] [Em] [Am]
+     Tere Bin mai yun Kaise jiya Kaise jiya tere bin
+
+     [Am] [Em] [F] [Em] [Am]
+     Tere Bin mai yun Kaise jiya Kaise jiya tere bin
+
+
+     ---------------------------------------------------------
+     O O Jaane Jaana
+     ---------------------------------------------------------
+     [Am]Mera khwab [G]mere
+     [G]Khayalon ki [Am]rani
+     [Am]Kisi din [G]banegi
+     [G]Hamari [Am]kahani
+
+     [Am]Mera khwab [G]mere
+     [G]Khayalon ki [Am]rani
+     [Am]Kisi din [G]banegi
+     [G]Hamari [Am]kahani
+
+     Ye [G]meri ashi(Dm)qui
+     Ye [C]kasam maine [Am]li
+     pyaar [G]mein ekdin
+     Meri [Am]jaan tujhe hai [G]pana[Am]
+
+     [Am]O o jaane jana
+     [G]Dhunde tujhe dewana
+     [G]Sapn mein roz aaye
+     [C]Aa zindagi mein aana [Am]Sanam
+
+     </pre>
+</body>
+
+</html>

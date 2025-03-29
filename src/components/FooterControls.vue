@@ -1,7 +1,7 @@
 <template>
   <div class="controls-bar">
-    <button @click="transpose(true)">TRANS +</button>
-    <button @click="transpose(false)">TRANS −</button>
+    <button @click="transpose(1)">TRANS +</button>
+    <button @click="transpose(-1)">TRANS −</button>
     <button @click="toggleScroll">
       {{ isScrolling ? "STOP SCROLL" : "START SCROLL" }}
     </button>
@@ -15,7 +15,12 @@
 <script setup>
 import { ref, onUnmounted } from "vue";
 
-const emit = defineEmits(["updateLyrics"]);
+const props = defineProps({
+  originalLyrics: Array,
+  transpositionOffset: Number,
+});
+
+const emit = defineEmits(["updateLyrics", "updateOffset"]);
 
 const scrollSpeed = ref(1);
 const isScrolling = ref(false);
@@ -40,44 +45,61 @@ function toggleScroll() {
   }
 }
 
-function transposeChord(chord, up = true) {
-  const chords = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
-  const match = chord.match(/\[([A-G][#b]?m?)\]/);
+
+function normalize(root) {
+  return enharmonicMap[root] || root;
+}
+const CHORDS = [
+  "C", "C#", "D", "D#", "E", "F",
+  "F#", "G", "G#", "A", "A#", "B"
+];
+
+
+function transposeChord(chord, offset) {
+  const match = chord.match(/\[([A-G][#b]?)([^]]*)\]/);
   if (!match) return chord;
 
-  let base = match[1];
-  const isMinor = base.endsWith("m");
-  const root = isMinor ? base.slice(0, -1) : base;
-  let idx = chords.indexOf(root);
-  if (idx === -1) return chord;
+  let root = match[1];       // e.g., F#
+  const suffix = match[2];   // e.g., m, m7, add9
 
-  let newIdx = up ? (idx + 1) % chords.length : (idx - 1 + chords.length) % chords.length;
-  const newChord = chords[newIdx] + (isMinor ? "m" : "");
-  return `[${newChord}]`;
+  // Normalize flats to sharps
+  const flatToSharp = {
+    "Db": "C#", "Eb": "D#", "Gb": "F#", "Ab": "G#", "Bb": "A#"
+  };
+  root = flatToSharp[root] || root;
+
+  const index = CHORDS.indexOf(root);
+  if (index === -1) return chord;
+
+  const newIndex = (index + offset + CHORDS.length) % CHORDS.length;
+  const transposedRoot = CHORDS[newIndex];
+  console.log("Transpose chord ", chord, " with offset ",offset, " to get this: ",`[${transposedRoot}${suffix}]`);
+  return `[${transposedRoot}${suffix}]`;
 }
 
-function transpose(up = true) {
-  emit("updateLyrics", (lyrics) => {
-    const cleanLyrics = lyrics.replace(
-      /<span class="chord">(\[[A-G][#b]?m?\])<\/span>/g,
-      "$1"
-    );
-    return cleanLyrics.replace(
-      /\[[A-G][#b]?m?\]/g,
-      (chord) => `<span class="chord">${transposeChord(chord, up)}</span>`
-    );
-  });
+
+
+
+
+
+
+
+function transpose(offsetChange) {
+  const newOffset = props.transpositionOffset + offsetChange;
+  emit("updateOffset", newOffset);
+
+  const updatedLyrics = props.originalLyrics.map(block =>
+    block.replace(/\[[A-G][#b]*[^]]*\]/g, chord => transposeChord(chord, newOffset))
+  );
+
+  emit("updateLyrics", updatedLyrics);
 }
 
 onUnmounted(() => {
   cancelAnimationFrame(scrollFrameId);
 });
 
-defineExpose({
-  toggleScroll,
-  isScrolling,
-  scrollSpeed,
-});
+defineExpose({ toggleScroll });
 </script>
 
 <style scoped>
@@ -95,7 +117,6 @@ defineExpose({
   z-index: 100;
   transition: background-color 0.3s ease;
 }
-
 .controls-bar button {
   background-color: #2c3e50;
   color: white;
@@ -104,7 +125,6 @@ defineExpose({
   border-radius: 4px;
   cursor: pointer;
 }
-
 .controls-bar button:hover {
   background-color: #1abc9c;
 }

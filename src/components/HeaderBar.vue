@@ -1,15 +1,17 @@
-<!-- components/HeaderBar.vue -->
 <template>
   <div class="header-bar">
     <router-link to="/" class="back-btn">⬅ Back</router-link>
-    <button class="theme-toggle" @click="$emit('toggle-dark')">
+    <button class="theme-toggle" @click="$emit('toggleDark')">
       {{ isDarkMode ? "🌞 Light Mode" : "🌙 Dark Mode" }}
     </button>
   </div>
 </template>
 
 <script setup>
-defineProps(['isDarkMode']);
+defineProps({
+  isDarkMode: Boolean,
+});
+defineEmits(['toggleDark']);
 </script>
 
 <style scoped>

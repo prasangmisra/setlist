@@ -17,3 +17,5 @@ To deploy
 ```
 make deploy
 ```
+
+Production site will be available [here](https://prasangmisra.github.io/setlist/)

@@ -29,7 +29,7 @@ let currentScroll = window.scrollY;
 
 function scrollStep() {
   if (!isScrolling.value) return;
-  currentScroll += scrollSpeed.value * 0.2;
+  currentScroll += scrollSpeed.value * 0.05;
   window.scrollTo(0, currentScroll);
   scrollFrameId = requestAnimationFrame(scrollStep);
 }

@@ -104,13 +104,13 @@ onMounted(() => {
   };
 
   window.addEventListener("keydown", handleKeyPress);
-  document.body.addEventListener("touchstart", handleTouchStart);
-  document.body.addEventListener("click", handleClick);
+//   document.body.addEventListener("touchstart", handleTouchStart);
+//   document.body.addEventListener("click", handleClick);
 
   onUnmounted(() => {
-    window.removeEventListener("keydown", handleKeyPress);
-    document.body.removeEventListener("touchstart", handleTouchStart);
-    document.body.removeEventListener("click", handleClick);
+    // window.removeEventListener("keydown", handleKeyPress);
+    // document.body.removeEventListener("touchstart", handleTouchStart);
+    // document.body.removeEventListener("click", handleClick);
   });
 });
 

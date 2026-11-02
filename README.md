@@ -18,4 +18,6 @@ To deploy
 make deploy
 ```
 
+Pushing to `main` also deploys automatically via the GitHub Action in `.github/workflows/deploy.yml`.
+
 Production site will be available [here](https://prasangmisra.github.io/setlist/)

@@ -16,7 +16,7 @@ Mujh mein tu shamil ho gayi
 [F#m] 
 Ye duniya mehfil ho gayi
 [D]          [Dm]
-Kaise yakeen dilao khud ko
+Kaise yakeen dilaaun khud ko
 [A] 
 Ki tu mujhe haasil ho gayi
 
@@ -25,7 +25,7 @@ Mujh mein tu shamil ho gayi
 [F#m] 
 Ye duniya mehfil ho gayi
 [D]          [Dm]
-Kaise yakeen dilao khud ko
+Kaise yakeen dilaaun khud ko
 [A] 
 Ki tu mujhe haasil ho gayi
 
@@ -46,7 +46,7 @@ Mujh mein tu shamil ho gayi
 [F#m] 
 Ye duniya mehfil ho gayi
 [D]           [Dm]
-Kaise yakeen dilao khud ko
+Kaise yakeen dilaaun khud ko
 [A] 
 Ki tu mujhe haasil ho gayi
 
@@ -80,7 +80,7 @@ Mujh mein tu shamil ho gayi
 [F#m] 
 Ye duniya mehfil ho gayi
 [D]          [Dm]
-Kaise yakeen dilao khud ko
+Kaise yakeen dilaaun khud ko
 [A] 
 Ki tu mujhe haasil ho gayi
 
@@ -89,7 +89,7 @@ Mujh mein tu shamil ho gayi
 [F#m] 
 Ye duniya mehfil ho gayi
 [D]          [Dm]
-Kaise yakeen dilao khud ko
+Kaise yakeen dilaaun khud ko
 [A] 
 Ki tu mujhe haasil ho gayi
 
